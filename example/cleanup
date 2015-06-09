@@ -1,0 +1,63 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * This script is an example usage of the cleanup library. It assumes, that the oxid install is:
+ *  - either the parent of the vendor directory
+ *  - a directory on the same level as the vendor directory called 'htdocs'
+ *  - or a directory on the same level as the vendor directory called 'oxid'
+ */
+
+use RA\OxidCleanupScripts\OxidCleanup;
+
+$files      = array(__DIR__ . '/../vendor/autoload.php', __DIR__ . '/../../../autoload.php');
+$oxidDirs   = array(__DIR__ . '/..', __DIR__ . '/../oxid', __DIR__ . '/../htdocs', __DIR__ . '/../../../../htdocs', __DIR__ . '/../../../../oxid', __DIR__ . '/../../../..');
+$loader     = null;
+$oxidRoot   = null;
+
+foreach ($files as $file) {
+    if (file_exists($file)) {
+        $loader = require $file;
+        break;
+    }
+}
+
+foreach ($oxidDirs as $oxDir) {
+    if (file_exists($oxDir . '/config.inc.php')) {
+        $oxidRoot = $oxDir;
+        break;
+    }
+}
+
+if (!$loader) {
+    throw new RuntimeException('vendor/autoload.php could not be found. Did you run `php composer.phar install`?');
+}
+
+if (!$oxidRoot) {
+    throw new RuntimeException('Oxid Root dir could not be determined');
+}
+
+$oCleanUpService = new OxidCleanup($oxidRoot);
+$oCleanUpService->registerOutputHandler(function($message) {
+        echo date('Y-m-d H:i:s') . ': ' . $message . "\n";
+    });
+
+$oCleanUpService->cleanUpModulePaths();
+
+// Clean Up the Modules array
+$oCleanUpService->cleanUpModuleExtends();
+
+// Clean up disabled Modules
+$oCleanUpService->cleanUpDisabledModules();
+
+// Remove non existing files from database
+$oCleanUpService->cleanUpModuleFiles();
+
+// remove duplicate blocks from the database
+$oCleanUpService->cleanupDuplicateBlocks();
+
+// remove blocks that dont exist anymore
+$oCleanUpService->cleanupOldBlocks();
+
+// Clears the cache
+$oCleanUpService->clearCache();

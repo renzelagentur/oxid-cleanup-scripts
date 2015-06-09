@@ -1,0 +1,11 @@
+renzel.agentur OXID cleanup scripts
+
+This little script can be used, to cleanup your OXID Installation's database. Oxid tends to clutter up with data from from modules that have changed during time, or are no longer part of your installation.
+This can lead to the point, that your installation won't even run properly anymore.
+
+This script, takes care of module data, that is not needed anymore. It will delete those entries and check for duplicates for some data aswell and clean those up.
+
+Be aware, that even though it is unlikely, this script could cause your installation to not function properly. It is strongly advised, to not use these scripts directly inside a productive environment.
+Always run these scripts on a local copy of your database first, to make sure, that everything still works as intended.
+
+To see how to use this library, checkout the example directory.

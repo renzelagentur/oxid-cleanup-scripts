@@ -1,0 +1,19 @@
+{
+    "name": "ra/oxid-cleanup-scripts",
+    "description": "Scripts used to clean up oxid configuration",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christian Loock",
+            "email": "chl@vkf-renzel.de"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "ext-mysqli": "*"
+    },
+    "autoload": {
+        "psr-4": {"": "src/"}
+    }
+}
