@@ -61,3 +61,6 @@ $oCleanUpService->cleanupOldBlocks();
 
 // Clears the cache
 $oCleanUpService->clearCache();
+
+// Does the same thing as everything above
+// $oCleanUpService->fullCleanUp();

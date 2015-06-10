@@ -27,9 +27,7 @@ class OxidCleanup
         $this->oxidRoot = realpath($oxidRootDirectory);
 
         $this->loadModuleMetadata();
-
         $this->oConf = new FakeConfig($this->oxidRoot);
-
         $this->oDbConnection = new \mysqli(
             $this->oConf->dbHost
             , $this->oConf->dbUser
@@ -347,5 +345,22 @@ class OxidCleanup
                 return $aModule;
             }
         }
+    }
+
+    public function fullCleanUp()
+    {
+        $this->cleanUpModulePaths();
+
+        $this->cleanUpModuleExtends();
+
+        $this->cleanUpDisabledModules();
+
+        $this->cleanUpModuleFiles();
+
+        $this->cleanupDuplicateBlocks();
+
+        $this->cleanupOldBlocks();
+
+        $this->clearCache();
     }
 } 
