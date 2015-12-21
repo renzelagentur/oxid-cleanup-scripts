@@ -237,6 +237,35 @@ class OxidCleanup
 
     }
 
+    public function cleanUpModuleVersions()
+    {
+        $this->getModulesFromDir($this->oxidRoot . '/modules/');
+        $sQuery = sprintf('SELECT OXID, OXSHOPID, OXVARNAME, OXVARTYPE, DECODE(oxvarvalue, "%s") as OXVARVALUE FROM oxconfig WHERE OXVARNAME = "aModuleVersions"', $this->oConf->sConfigKey);
+
+        $stmt = $this->oDbConnection->prepare($sQuery);
+
+        $stmt->execute();
+        $res = $stmt->get_result();
+        while ($res && $conf = mysqli_fetch_assoc($res)) {
+            $versions = unserialize($conf['OXVARVALUE']);
+            foreach ($versions as $module => $version) {
+                $currentVersion = $this->moduleMetaData[$module]['version'];
+                if (!isset($this->_aModules[$module])) {
+                    unset($versions[$module]);
+                } elseif ($version != $currentVersion) {
+                    $versions[$module] = $currentVersion;
+                }
+            }
+            $sUpdateSsql = sprintf('UPDATE oxconfig SET OXVARVALUE = ENCODE("%s", "%s") WHERE OXVARNAME = "aModuleVersions" AND OXSHOPID = %d', $this->oDbConnection->escape_string(serialize($versions)), $this->oConf->sConfigKey, $conf['OXSHOPID']);
+
+            if (!$this->oDbConnection->query($sUpdateSsql)) {
+                throw new MysqliQueryException($this->oDbConnection->error);
+            } else {
+                $this->output($sUpdateSsql);
+            }
+        }
+    }
+
 
     public function cleanUpModulePaths()
     {
@@ -352,6 +381,8 @@ class OxidCleanup
         $this->cleanupDuplicateBlocks();
 
         $this->cleanupOldBlocks();
+
+        $this->cleanUpModuleVersions();
 
         $this->clearCache();
     }
