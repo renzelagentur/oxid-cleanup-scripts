@@ -300,11 +300,10 @@ class OxidCleanup
         while ($res && $conf = mysqli_fetch_assoc($res)) {
             $versions = unserialize($conf['OXVARVALUE']);
             foreach ($versions as $module => $version) {
-                $currentVersion = $this->moduleMetaData[$module]['version'];
                 if (!isset($this->_aModules[$module])) {
                     unset($versions[$module]);
-                } elseif ($version != $currentVersion) {
-                    $versions[$module] = $currentVersion;
+                } elseif (isset($this->moduleMetaData[$module]) && $this->moduleMetaData[$module]['version'] != $versions[$module]) {
+                    $versions[$module] = $this->moduleMetaData[$module]['version'];
                 }
             }
             $sUpdateSsql = sprintf('UPDATE oxconfig SET OXVARVALUE = ENCODE("%s", "%s") WHERE OXVARNAME = "aModuleVersions" AND OXSHOPID = %d', $this->oDbConnection->escape_string(serialize($versions)), $this->oConf->sConfigKey, $conf['OXSHOPID']);
