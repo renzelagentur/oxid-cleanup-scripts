@@ -191,7 +191,7 @@ class OxidCleanup
 
     public function cleanupDuplicateBlocks()
     {
-        $sQuery = "SELECT COUNT(*), oxshopid, oxmodule, oxfile, oxblockname FROM oxtplblocks GROUP BY oxshopid, oxmodule, oxfile, oxblockname HAVING COUNT(*) > 1";
+        $sQuery = "SELECT COUNT(*), oxshopid, oxmodule, oxtemplate, oxfile, oxblockname FROM oxtplblocks GROUP BY oxshopid, oxmodule, oxtemplate, oxfile, oxblockname HAVING COUNT(*) > 1";
         $stmt = $this->oDbConnection->prepare($sQuery);
 
         $stmt->execute();
