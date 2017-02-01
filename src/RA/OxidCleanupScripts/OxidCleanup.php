@@ -387,6 +387,63 @@ class OxidCleanup
         $this->output($cmd);
     }
 
+    public function insertNewModuleinModuleWatcher() {
+
+        $sQuery = sprintf('SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = "%s" AND TABLE_NAME = "ramodulewatcher"', $this->oConf->dbName);
+
+        $stmt = $this->oDbConnection->prepare($sQuery);
+
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        if($res->num_rows == 1) {
+
+            $aModuleIds = array_keys($this->moduleMetaData);
+            $aFoundModuleIds = [];
+
+            $sQuery = sprintf('SELECT DISTINCT OXMODULE FROM ramodulewatcher WHERE OXMODULE IN ("%s")', implode('","', $aModuleIds));
+
+            $stmt = $this->oDbConnection->prepare($sQuery);
+
+            $stmt->execute();
+            $res = $stmt->get_result();
+
+            while ($res && $conf = mysqli_fetch_assoc($res)) {
+                $aFoundModuleIds[] = $conf['OXMODULE'];
+            }
+
+            $sQuery = 'SELECT OXID FROM oxshops';
+
+            $stmt = $this->oDbConnection->prepare($sQuery);
+
+            $stmt->execute();
+            $res = $stmt->get_result();
+
+            $aShopIds = [];
+
+            while ($res && $conf = mysqli_fetch_assoc($res)) {
+                $aShopIds[] = $conf['OXID'];
+            }
+
+            foreach ($aModuleIds as $sModuleId) {
+                if (!in_array($sModuleId, $aFoundModuleIds)) {
+                    foreach ($aShopIds as $iShopId) {
+                        $sQuery = sprintf('INSERT INTO ramodulewatcher SET OXID = "%s", OXSHOPID = "%s", OXMODULE = "%s", OXSTATE = "0"',
+                            substr(md5(uniqid('', true) . '|' . microtime()), 0, 32),
+                            $iShopId,
+                            $sModuleId
+                        );
+
+                        $stmt = $this->oDbConnection->prepare($sQuery);
+                        $stmt->execute();
+                        $this->output($sQuery);
+                    }
+                }
+            }
+
+        }
+    }
+
 
     /**
      * Checks if directory is vendor directory.
@@ -437,6 +494,8 @@ class OxidCleanup
         $this->cleanupOldTemplates();
 
         $this->cleanUpModuleVersions();
+
+        $this->insertNewModuleinModuleWatcher();
 
         $this->clearCache();
     }
