@@ -382,7 +382,7 @@ class OxidCleanup
         $cmd = sprintf('rm -rf %s', $this->oxidRoot . '/tmp/*');
         exec($cmd);
         $this->output($cmd);
-        $cmd = sprintf('rm -rf %s', $this->oxidRoot . '/cache/*');
+        $cmd = sprintf('find %s -maxdepth 2 -name "*.cache" -type f -exec rm -ivf {} \;', $this->oxidRoot . '/cache');
         exec($cmd);
         $this->output($cmd);
     }
