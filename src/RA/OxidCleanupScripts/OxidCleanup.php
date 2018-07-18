@@ -198,13 +198,13 @@ class OxidCleanup
         $res = $stmt->get_result();
 
         while ($res && $blockInfo = mysqli_fetch_assoc($res)) {
-            $sSQL = sprintf("SELECT OXID FROM oxtplblocks WHERE oxshopid = %d AND OXMODULE = '%s' AND OXFILE = '%s' AND OXBLOCKNAME = '%s' ORDER BY OXTIMESTAMP DESC", $blockInfo['oxshopid'], $blockInfo['oxmodule'], $blockInfo['oxfile'], $blockInfo['oxblockname']);
+            $sSQL = sprintf("SELECT OXID FROM oxtplblocks WHERE oxshopid = '%s' AND OXMODULE = '%s' AND OXFILE = '%s' AND OXBLOCKNAME = '%s' ORDER BY OXTIMESTAMP DESC", $blockInfo['oxshopid'], $blockInfo['oxmodule'], $blockInfo['oxfile'], $blockInfo['oxblockname']);
 
             $subRes = $this->oDbConnection->query($sSQL);
 
             $latestBlock = mysqli_fetch_assoc($subRes);
 
-            $delSql = sprintf("DELETE FROM oxtplblocks WHERE oxshopid = %d AND OXMODULE = '%s' AND OXFILE = '%s' AND OXBLOCKNAME = '%s' AND OXID <> '%s'", $blockInfo['oxshopid'], $blockInfo['oxmodule'], $blockInfo['oxfile'], $blockInfo['oxblockname'], $latestBlock['OXID']);
+            $delSql = sprintf("DELETE FROM oxtplblocks WHERE oxshopid = '%s' AND OXMODULE = '%s' AND OXFILE = '%s' AND OXBLOCKNAME = '%s' AND OXID <> '%s'", $blockInfo['oxshopid'], $blockInfo['oxmodule'], $blockInfo['oxfile'], $blockInfo['oxblockname'], $latestBlock['OXID']);
             $this->oDbConnection->query($delSql);
             $this->output($delSql);
         }
@@ -252,7 +252,7 @@ class OxidCleanup
                     unset($modules[$module]);
                 }
             }
-            $sUpdateSsql = sprintf('UPDATE oxconfig SET OXVARVALUE = ENCODE("%s", "%s") WHERE OXVARNAME = "aModuleEvents" AND OXSHOPID = %d', $this->oDbConnection->escape_string(serialize($modules)), $this->oConf->sConfigKey, $conf['OXSHOPID']);
+            $sUpdateSsql = sprintf('UPDATE oxconfig SET OXVARVALUE = ENCODE("%s", "%s") WHERE OXVARNAME = "aModuleEvents" AND OXSHOPID = "%s"', $this->oDbConnection->escape_string(serialize($modules)), $this->oConf->sConfigKey, $conf['OXSHOPID']);
 
             if (!$this->oDbConnection->query($sUpdateSsql)) {
                 throw new MysqliQueryException($this->oDbConnection->error);
@@ -278,7 +278,7 @@ class OxidCleanup
                     unset($modules[$module]);
                 }
             }
-            $sUpdateSsql = sprintf('UPDATE oxconfig SET OXVARVALUE = ENCODE("%s", "%s") WHERE OXVARNAME = "aModuleTemplates" AND OXSHOPID = %d', $this->oDbConnection->escape_string(serialize($modules)), $this->oConf->sConfigKey, $conf['OXSHOPID']);
+            $sUpdateSsql = sprintf('UPDATE oxconfig SET OXVARVALUE = ENCODE("%s", "%s") WHERE OXVARNAME = "aModuleTemplates" AND OXSHOPID = "%s"', $this->oDbConnection->escape_string(serialize($modules)), $this->oConf->sConfigKey, $conf['OXSHOPID']);
 
             if (!$this->oDbConnection->query($sUpdateSsql)) {
                 throw new MysqliQueryException($this->oDbConnection->error);
@@ -306,7 +306,7 @@ class OxidCleanup
                     $versions[$module] = $this->moduleMetaData[$module]['version'];
                 }
             }
-            $sUpdateSsql = sprintf('UPDATE oxconfig SET OXVARVALUE = ENCODE("%s", "%s") WHERE OXVARNAME = "aModuleVersions" AND OXSHOPID = %d', $this->oDbConnection->escape_string(serialize($versions)), $this->oConf->sConfigKey, $conf['OXSHOPID']);
+            $sUpdateSsql = sprintf('UPDATE oxconfig SET OXVARVALUE = ENCODE("%s", "%s") WHERE OXVARNAME = "aModuleVersions" AND OXSHOPID = "%s"', $this->oDbConnection->escape_string(serialize($versions)), $this->oConf->sConfigKey, $conf['OXSHOPID']);
 
             if (!$this->oDbConnection->query($sUpdateSsql)) {
                 throw new MysqliQueryException($this->oDbConnection->error);
@@ -330,7 +330,7 @@ class OxidCleanup
 
 
 
-            $sUpdateSsql = sprintf('UPDATE oxconfig SET OXVARVALUE = ENCODE("%s", "%s") WHERE OXVARNAME = "aModulePaths" AND OXSHOPID = %d', $this->oDbConnection->escape_string(serialize($this->_aModules)), $this->oConf->sConfigKey, $conf['OXSHOPID']);
+            $sUpdateSsql = sprintf('UPDATE oxconfig SET OXVARVALUE = ENCODE("%s", "%s") WHERE OXVARNAME = "aModulePaths" AND OXSHOPID = "%s"', $this->oDbConnection->escape_string(serialize($this->_aModules)), $this->oConf->sConfigKey, $conf['OXSHOPID']);
 
             if (!$this->oDbConnection->query($sUpdateSsql)) {
                 throw new MysqliQueryException($this->oDbConnection->error);
